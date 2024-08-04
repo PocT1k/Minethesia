@@ -1,46 +1,76 @@
-#UTF-8 Будет здесь!
-#How Synthesia, but Minethesia
+# UTF-8 Будет здесь!
 
 import mido
-import pygame
-import pygame.midi
 import time
+import pygame.midi
+
+from note import *
 
 
-def play_midi(file_path): #Воспроизведение MIDI файла
-    # Инициализация Pygame и MIDI
-    pygame.init()
+def play_midi(file_path):
+    # pygame.init()
     pygame.midi.init()
-    # Открываем MIDI выход
-    player = pygame.midi.Output(0)  # Выберите нужный MIDI-выход (0 - первый)
-    player.set_instrument(0)
-    # Загружаем MIDI файл
     mid = mido.MidiFile(file_path)
+    cTracks = len(mid.tracks)
+    notes = []
+    players = []
+    metaMessages = ['track_name', 'time_signature', 'key_signature', 'set_tempo', 'midi_port', 'end_of_track']
+    noteMessages = ['note_on', 'note_off', 'control_change', 'program_change', 'pitchwheel']
+    print(file_path)
+    print(f'Количество треков: {cTracks}')
 
-    metaMessages = ['time_signature', 'key_signature', 'set_tempo', 'midi_port', 'end_of_track']
-    notMetaMessages = ['control_change', 'program_change']
+    # Создание проигрывателей TODO - пока всего 1 на всех
+    player1 = pygame.midi.Output(0)
+    player1.set_instrument(0)
+    for p in range (0, cTracks):
+        players.append(player1)
 
-    # Проходим по всем сообщениям в треках
-    for t, track in enumerate(mid.tracks, start=1):
-        print(f'Track{t}: {track.name}')
+    # Парсинг треков и добавление в массив
+    for t, track in enumerate(mid.tracks):
+        # track_name = track.name.encode('latin1').decode('utf-8')
+        # print(f'Track {t}: {track_name}')
+        Note.time = 0
+        player = players[t]
+
         for msg in track:
-            time.sleep(msg.time * 0.001 * 1.2)  # Ждем время, указанное в сообщении
+            # print(f'\t{msg}')
+            notes.append(Note(t, msg, player))
+        pass # for msg
+    pass # for track
 
-            if msg.type == 'note_on':
-                player.note_on(msg.note, msg.velocity)
-            elif msg.type == 'note_off':
-                player.note_off(msg.note, msg.velocity)
-            else:
-                if (msg.type not in (metaMessages + notMetaMessages)):
-                    print(f'\t{msg}')
+    # Сортировка массива с нотами по времени
+    notes.sort(key=lambda note: note.time)
 
-    # Закрываем MIDI выход
-    player.close()
+    # Проигрывание файла
+    timePast = 0
+    lenNotes = len(notes)
+    for i, n in enumerate(notes):
+        # if (i < lenNotes - 100):
+        #     timePast = n.time
+        #     continue
+        print(n.time)
+        time.sleep((n.time - timePast) * 0.001 * 0.6)
+        timePast = n.time
+        n.proc()
+    pass # for note
+    print(f'END')
+    time.sleep(0.3)
+
+    # Отключение
+    for p in range (0, cTracks):
+        players[p].close()
     pygame.midi.quit()
-    pygame.quit()
+    # pygame.quit()
+pass # func play_midi()
 
 # Открываем MIDI файл
 folder = 'D:\\Backups and Saves\\midi\\'
-name = 'Беловежская пуща (труба).mid'
-path = folder + name
+# name = 'Газманов - Эскадрон'
+name = 'Песняры - Вологда2'
+# name = 'Травы, травы'
+# name = 'Я буду долго гнать велосипед'
+# name = 'Опять от меня сбежала последняя электричка'
+# name = 'Прекрасное далёко (вариант)' #TODO - пауза в начале, ошибка с названием
+# name = 'Пугачёва - Куда уходит детство'
+path = folder + name + '.mid'
 play_midi(path)
