@@ -1,22 +1,22 @@
-# UTF-8 Будет здесь!
+﻿# UTF-8 Будет здесь!
 
 import mido
 import time
 import pygame.midi
 
 from note import *
+from func import *
 
 
 def play_midi(file_path):
-    # pygame.init()
     pygame.midi.init()
     mid = mido.MidiFile(file_path)
     cTracks = len(mid.tracks)
     notes = []
     players = []
-    metaMessages = ['track_name', 'time_signature', 'key_signature', 'set_tempo', 'midi_port', 'end_of_track']
-    noteMessages = ['note_on', 'note_off', 'control_change', 'program_change', 'pitchwheel']
-    print(file_path)
+    print(mid.filename)
+    print(f'Тип: {mid.type}')
+    print(f'Длинна в тактах: {mid.length}')
     print(f'Количество треков: {cTracks}')
 
     # Создание проигрывателей TODO - пока всего 1 на всех
@@ -27,30 +27,34 @@ def play_midi(file_path):
 
     # Парсинг треков и добавление в массив
     for t, track in enumerate(mid.tracks):
-        # track_name = track.name.encode('latin1').decode('utf-8')
-        # print(f'Track {t}: {track_name}')
+        track_name = decodStr(track.name)
+        print(f'Track {t}: {"Track " + str(t+1) + " (no name)" if track_name == "" else track_name}')
         Note.time = 0
         player = players[t]
 
         for msg in track:
-            # print(f'\t{msg}')
             notes.append(Note(t, msg, player))
         pass # for msg
     pass # for track
 
     # Сортировка массива с нотами по времени
     notes.sort(key=lambda note: note.time)
+    lenNotes = len(notes)
 
     # Проигрывание файла
-    timePast = 0
-    lenNotes = len(notes)
+    timePast = 0.0
+    timeStart = 0.0
     for i, n in enumerate(notes):
-        # if (i < lenNotes - 100):
+        # if (i < lenNotes - 500): # Переход к концу
         #     timePast = n.time
         #     continue
-        print(n.time)
-        time.sleep((n.time - timePast) * 0.001 * 0.6)
+        if n.time < timeStart: # Начало с точки
+            timePast = n.time
+            continue
+
+        time.sleep((n.time - timePast) * 0.8)
         timePast = n.time
+        # exit(0)
         n.proc()
     pass # for note
     print(f'END')
@@ -60,17 +64,21 @@ def play_midi(file_path):
     for p in range (0, cTracks):
         players[p].close()
     pygame.midi.quit()
-    # pygame.quit()
-pass # func play_midi()
+pass # funck play_midi()
 
 # Открываем MIDI файл
-folder = 'D:\\Backups and Saves\\midi\\'
+folder = 'F:\\Backups and Saves\\midi\\'
 # name = 'Газманов - Эскадрон'
+# name = 'Песняры - Вологда1'
 name = 'Песняры - Вологда2'
 # name = 'Травы, травы'
 # name = 'Я буду долго гнать велосипед'
+# name = 'На дальней станции сойду'
 # name = 'Опять от меня сбежала последняя электричка'
-# name = 'Прекрасное далёко (вариант)' #TODO - пауза в начале, ошибка с названием
+# name = 'Прекрасное далёко (вариант)' #TODO - пауза в начале
 # name = 'Пугачёва - Куда уходит детство'
+# name = 'Чёрный ворон конв'
+# name = 'Сергей Беликов - Снится мне деревня'
+# name = 'Как молод мы были'
 path = folder + name + '.mid'
 play_midi(path)
