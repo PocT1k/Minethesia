@@ -52,8 +52,10 @@ def play_midi(file_path):
             timePast = n.time
             continue
 
-        time.sleep((n.time - timePast) * 0.8)
-        timePast = n.time
+        timeNow = n.time
+        print(f'{timeNow} t:{n.t} {n.msg}')
+        if timeNow: time.sleep(timeNow - timePast)
+        timePast = timeNow
         # exit(0)
         n.proc()
     pass # for note
@@ -70,7 +72,7 @@ pass # funck play_midi()
 folder = 'F:\\Backups and Saves\\midi\\'
 # name = 'Газманов - Эскадрон'
 # name = 'Песняры - Вологда1'
-name = 'Песняры - Вологда2'
+# name = 'Песняры - Вологда2'
 # name = 'Травы, травы'
 # name = 'Я буду долго гнать велосипед'
 # name = 'На дальней станции сойду'
@@ -80,5 +82,6 @@ name = 'Песняры - Вологда2'
 # name = 'Чёрный ворон конв'
 # name = 'Сергей Беликов - Снится мне деревня'
 # name = 'Как молод мы были'
+name = 'Ласковый Май - Седая ночь'
 path = folder + name + '.mid'
 play_midi(path)

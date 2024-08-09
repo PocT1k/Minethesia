@@ -16,7 +16,7 @@ class Note:
     noteMessages = ['note_on', 'note_off']
 
     def __init__(self, t, msg, player):
-        Note.time += msg.time * (1000.0 / Note.tempo / Note.denominator)
+        Note.time += msg.time * (1000000.0 / Note.tempo)
         self.time = Note.time
         self.t = t
         self.msg = msg
@@ -25,7 +25,8 @@ class Note:
         if msg.is_meta:
             if msg.type == 'set_tempo':
                 Note.tempo = msg.tempo
-                Note.bpm = 60 * (1000000.0 / Note.tempo)
+                Note.bpm = round(60 * (1000000.0 / Note.tempo), 2)
+                print(f'tempo={Note.tempo}, bpm={Note.bpm}')
             elif msg.type == 'time_signature':
                 Note.numerator = msg.numerator
                 Note.denominator = msg.denominator
@@ -37,7 +38,7 @@ class Note:
     pass # __init__()
 
     def proc(self):
-        print(f'{self.time} t:{self.t} {self.msg}')
+        # print(f'{self.time} t:{self.t} {self.msg}')
         if self.msg.type == 'note_on':
             self.player.note_on(self.msg.note, self.msg.velocity)
         elif self.msg.type == 'note_off':
