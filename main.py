@@ -16,7 +16,7 @@ def play_midi(file_path):
     players = []
     print(mid.filename)
     print(f'Тип: {mid.type}')
-    print(f'Длинна в тактах: {mid.length}')
+    print(f'Длинна в тактах: {round(mid.length, 2)}')
     print(f'Количество треков: {cTracks}')
 
     # Создание проигрывателей TODO - пока всего 1 на всех
@@ -44,6 +44,7 @@ def play_midi(file_path):
     # Проигрывание файла
     timePast = 0.0
     timeStart = 0.0
+    print()
     for i, n in enumerate(notes):
         # if (i < lenNotes - 500): # Переход к концу
         #     timePast = n.time
@@ -82,6 +83,8 @@ folder = 'F:\\Backups and Saves\\midi\\'
 # name = 'Чёрный ворон конв'
 # name = 'Сергей Беликов - Снится мне деревня'
 # name = 'Как молод мы были'
-name = 'Ласковый Май - Седая ночь'
+# name = 'Ласковый Май - Седая ночь'
+# name = 'Подмосковные вечера2'
+name = 'Аигель - Пыяла'
 path = folder + name + '.mid'
 play_midi(path)

@@ -16,8 +16,8 @@ class Note:
     noteMessages = ['note_on', 'note_off']
 
     def __init__(self, t, msg, player):
-        Note.time += msg.time * (1000000.0 / Note.tempo)
-        self.time = Note.time
+        Note.time += msg.time * (1000000.0 / Note.tempo) * 0.001 * 0.5
+        self.time = round(Note.time, 2)
         self.t = t
         self.msg = msg
         self.player = player
@@ -26,7 +26,7 @@ class Note:
             if msg.type == 'set_tempo':
                 Note.tempo = msg.tempo
                 Note.bpm = round(60 * (1000000.0 / Note.tempo), 2)
-                print(f'tempo={Note.tempo}, bpm={Note.bpm}')
+                print(f'\ttempo={Note.tempo}, bpm={Note.bpm}')
             elif msg.type == 'time_signature':
                 Note.numerator = msg.numerator
                 Note.denominator = msg.denominator
